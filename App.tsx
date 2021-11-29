@@ -1,21 +1,44 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useEffect} from 'react';
+import {Button, View} from 'react-native';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import {NavigationContainer, useFocusEffect} from "@react-navigation/native";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+function HomeScreen({navigation}) {
+    return (
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <Button
+                onPress={() => navigation.navigate('Details')}
+                title="Go to details"
+            />
+        </View>
+    );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+function DetailsScreen({navigation}) {
+    useFocusEffect(React.useCallback(() => {
+        console.log("Details screen focused")
+
+        return () => {
+            console.log("Details screen unfocused")
+        };
+    }, []))
+
+    return (
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <Button onPress={() => navigation.goBack()} title="Go back home"/>
+        </View>
+    );
+}
+
+const Drawer = createDrawerNavigator();
+
+export default function App() {
+    return (
+        <NavigationContainer>
+            <Drawer.Navigator initialRouteName="Home">
+                <Drawer.Screen name="Home" component={HomeScreen}/>
+                <Drawer.Screen name="Details" component={DetailsScreen}/>
+            </Drawer.Navigator>
+        </NavigationContainer>
+    );
+}
