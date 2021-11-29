@@ -1,6 +1,6 @@
 import {StatusBar} from 'expo-status-bar';
 import React from 'react';
-import {Alert, Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, Button, Pressable, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import IconSettings from "./IconSettings";
 import {Ionicons} from "@expo/vector-icons";
 
@@ -39,6 +39,14 @@ export default function App() {
                 </Text>
                 <Text>Press Here</Text>
             </TouchableOpacity>
+
+            <Pressable
+                onPressIn={() => console.log('pressing in') }
+                onPressOut={() => console.log('pressing out')}
+                onLongPress={() => console.log('long press')}
+                style={styles.button}>
+                <Text>Pressable Here</Text>
+            </Pressable>
 
         </View>
     );
