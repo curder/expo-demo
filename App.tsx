@@ -1,6 +1,6 @@
 import {StatusBar} from 'expo-status-bar';
-import React from 'react';
-import {Alert, Button, Pressable, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useState} from 'react';
+import {Alert, Button, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import IconSettings from "./IconSettings";
 import {Ionicons} from "@expo/vector-icons";
 
@@ -8,6 +8,8 @@ export default function App() {
     const onPress = () => {
         Alert.alert('Touchable opacity pressed')
     }
+
+    const [text, setText] = useState('');
 
     return (
         <View style={styles.container}>
@@ -35,19 +37,28 @@ export default function App() {
                 onPress={onPress}
             >
                 <Text>
-                    <Ionicons name="settings" size={24} color="black" />
+                    <Ionicons name="settings" size={24} color="black"/>
                 </Text>
                 <Text>Press Here</Text>
             </TouchableOpacity>
 
             <Pressable
-                onPressIn={() => console.log('pressing in') }
+                onPressIn={() => console.log('pressing in')}
                 onPressOut={() => console.log('pressing out')}
                 onLongPress={() => console.log('long press')}
                 style={styles.button}>
                 <Text>Pressable Here</Text>
             </Pressable>
 
+            <View>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setText}
+                    value={text}
+                />
+
+                <Text>{text}</Text>
+            </View>
         </View>
     );
 }
@@ -65,5 +76,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: "#ddd",
         padding: 10
+    },
+    input: {
+        width: 300,
+        height: 40,
+        margin: 12,
+        borderWidth: 1,
+        padding: 10,
     },
 });
