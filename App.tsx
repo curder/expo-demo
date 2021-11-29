@@ -1,6 +1,7 @@
 import {StatusBar} from 'expo-status-bar';
 import React from 'react';
 import {Alert, Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import IconSettings from "./IconSettings";
 
 export default function App() {
     const onPress = () => {
@@ -21,6 +22,9 @@ export default function App() {
                 style={styles.button}
                 onPress={onPress}
             >
+                <Text>
+                    <IconSettings color={'#007aff'} width={16} height={16}/>
+                </Text>
                 <Text>Press Here</Text>
             </TouchableOpacity>
 
@@ -37,7 +41,7 @@ const styles = StyleSheet.create({
         // justifyContent: 'center',
     },
     button: {
-        alignItems: "center",
+        justifyContent: 'center',
         flexDirection: 'row',
         backgroundColor: "#ddd",
         padding: 10
