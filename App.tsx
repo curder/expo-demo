@@ -2,6 +2,7 @@ import {StatusBar} from 'expo-status-bar';
 import React from 'react';
 import {Alert, Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import IconSettings from "./IconSettings";
+import {Ionicons} from "@expo/vector-icons";
 
 export default function App() {
     const onPress = () => {
@@ -24,6 +25,17 @@ export default function App() {
             >
                 <Text>
                     <IconSettings color={'#007aff'} width={16} height={16}/>
+                </Text>
+                <Text>Press Here</Text>
+            </TouchableOpacity>
+
+
+            <TouchableOpacity
+                style={styles.button}
+                onPress={onPress}
+            >
+                <Text>
+                    <Ionicons name="settings" size={24} color="black" />
                 </Text>
                 <Text>Press Here</Text>
             </TouchableOpacity>
