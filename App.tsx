@@ -1,8 +1,23 @@
 import {StatusBar} from 'expo-status-bar';
 import React, {useState} from 'react';
-import {Alert, Button, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Alert, Button, FlatList, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import IconSettings from "./IconSettings";
 import {Ionicons} from "@expo/vector-icons";
+
+const DATA = [
+    {
+        id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+        title: 'First Item',
+    },
+    {
+        id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+        title: 'Second Item',
+    },
+    {
+        id: '58694a0f-3da1-471f-bd96-145571e29d72',
+        title: 'Third Item',
+    },
+];
 
 export default function App() {
     const onPress = () => {
@@ -10,6 +25,12 @@ export default function App() {
     }
 
     const [text, setText] = useState('');
+
+    const renderItem = ({item}) => {
+        return <View>
+            <Text>{item.title}</Text>
+        </View>
+    };
 
     return (
         <View style={styles.container}>
@@ -58,6 +79,14 @@ export default function App() {
                 />
 
                 <Text>{text}</Text>
+            </View>
+
+            <View>
+                <FlatList
+                    data={DATA}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.id}
+                />
             </View>
         </View>
     );
