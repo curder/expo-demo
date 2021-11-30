@@ -7,15 +7,15 @@ export default function HomeScreen({navigation}) {
       <Text>Home Screen / Feed</Text>
       <Button title={'New Tweet'} onPress={() => {
         navigation.navigate("New Tweet")
-      }} />
+      }}/>
 
       <Button title={'Tweet'} onPress={() => {
         navigation.navigate("TweetScreen")
-      }} />
+      }}/>
 
       <Button title={'Profile'} onPress={() => {
         navigation.navigate("ProfileScreen")
-      }} />
+      }}/>
     </View>
   )
 }
