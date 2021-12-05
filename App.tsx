@@ -33,12 +33,12 @@ const HomeStackNavigator = () => {
         options={{ title: '' }}
       />
       <Stack.Screen
-        name="TweetScreen"
+        name="Tweet Screen"
         component={TweetScreen}
         options={{ title: '' }}
       />
       <Stack.Screen
-        name="ProfileScreen"
+        name="Profile Screen"
         component={ProfileScreen}
         options={{ title: '' }}
       />
