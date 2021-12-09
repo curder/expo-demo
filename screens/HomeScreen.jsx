@@ -1,68 +1,39 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Text, View, StyleSheet, FlatList, Image, TouchableOpacity, Platform} from "react-native";
 import {AntDesign, EvilIcons} from "@expo/vector-icons";
+import axios from "axios";
+import dayjs from 'dayjs';
+import '../helpers/formatCustomLocale.js';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime)
 
 export default function HomeScreen ({ navigation }) {
-  const DATA = [
-    {
-      id: '1',
-      title: 'First Item',
-    },
-    {
-      id: '2',
-      title: 'Second Item',
-    },
-    {
-      id: '3',
-      title: 'Third Item',
-    },
-    {
-      id: '4',
-      title: 'Fourth Item',
-    },
-    {
-      id: '5',
-      title: 'Fifth Item',
-    },
-    {
-      id: '6',
-      title: 'Sixth Item',
-    },
-    {
-      id: '7',
-      title: 'Seventh Item',
-    },
-    {
-      id: '8',
-      title: 'Eight Item',
-    },
-    {
-      id: '9',
-      title: 'Ninth Item',
-    },
-    {
-      id: '10',
-      title: 'Tenth Item',
-    },
-  ];
+  const [data, setData] = useState([]);
+  useEffect(()=> {
+    getAllTweets()
+  }, [])
 
-  const renderItem = ({ item }) => (
+  let getAllTweets = () => {
+    axios.get('https://8965-2409-8a00-6051-d080-24fa-719e-2c45-3295.ngrok.io/api/tweets')
+      .then(res => setData(res.data))
+      .catch(e => console.log(e));
+  }
+
+  const renderItem = ({ item: tweet }) => (
     <View style={ styles.tweetContainer }>
       <TouchableOpacity onPress={ () => goToProfile() }>
-        <Image style={ styles.avatar } source={ { uri: 'https://reactnative.dev/img/tiny_logo.png' } }/>
+        <Image style={ styles.avatar } source={ { uri: tweet.user.avatar } }/>
       </TouchableOpacity>
       <View style={ { flex: 1, } }>
         <TouchableOpacity style={ styles.flexRow } onPress={ () => goToSignalTweet() }>
-          <Text numberOfLines={ 1 } style={ styles.tweetName }>{ item.title }</Text>
-          <Text numberOfLines={ 1 } style={ styles.tweetHandle }>@curder</Text>
+          <Text numberOfLines={ 1 } style={ styles.tweetName }>{ tweet.user.name }</Text>
+          <Text numberOfLines={ 1 } style={ styles.tweetHandle }>@{tweet.user.username}</Text>
           <Text>&middot;</Text>
-          <Text numberOfLines={ 1 } style={ styles.tweetHandle }>9m</Text>
+          <Text numberOfLines={ 1 } style={ styles.tweetHandle }>{dayjs(tweet.created_at).locale('custom-locale').toNow()}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={ styles.tweetContent } onPress={ () => goToSignalTweet() }>
-          <Text style={ styles.tweetContentContainer }>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam
-            autem cum doloribus eligendi excepturi inventore itaque iure libero numquam optio placeat porro provident
-            ratione, reprehenderit rerum sint sit vel velit!</Text>
+          <Text style={ styles.tweetContentContainer }>{ tweet.body }</Text>
         </TouchableOpacity>
 
         <View style={ styles.tweetEngagement }>
@@ -97,14 +68,14 @@ export default function HomeScreen ({ navigation }) {
   return (
     <View style={ styles.container }>
       <FlatList
-        data={ DATA }
+        data={ data }
         renderItem={ renderItem }
         keyExtractor={ item => item.id }
         ItemSeparatorComponent={ () => <View style={ styles.tweetSeparator }></View> }
       />
 
-      <TouchableOpacity style={styles.floatingButton} onPress={() => goToNewTweet()}>
-        <AntDesign name={'plus'} size={24} color={"white"} />
+      <TouchableOpacity style={ styles.floatingButton } onPress={ () => goToNewTweet() }>
+        <AntDesign name={ 'plus' } size={ 24 } color={ "white" }/>
       </TouchableOpacity>
     </View>
   )

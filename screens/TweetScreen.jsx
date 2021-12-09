@@ -47,20 +47,20 @@ export default function TweetScreen() {
 
       <View style={[styles.tweetEngagement, styles.spaceAround]}>
         <TouchableOpacity>
-          <EvilIcons name={'comment'} size={'32'} color={'gray'}/>
+          <EvilIcons name={'comment'} size={32} color={'gray'}/>
         </TouchableOpacity>
 
         <TouchableOpacity>
-          <EvilIcons name={'retweet'} size={'32'} color={'gray'}/>
+          <EvilIcons name={'retweet'} size={32} color={'gray'}/>
         </TouchableOpacity>
 
         <TouchableOpacity>
-          <EvilIcons name={'heart'} size={'32'} color={'gray'}/>
+          <EvilIcons name={'heart'} size={32} color={'gray'}/>
         </TouchableOpacity>
 
         <TouchableOpacity>
           <EvilIcons name={Platform.OS === 'ios' ? 'share-apple' : 'share-google'}
-                     size={'32'}
+                     size={32}
                      color={'gray'}/>
         </TouchableOpacity>
       </View>
