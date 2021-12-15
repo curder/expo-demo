@@ -12,15 +12,26 @@ export default function HomeScreen({navigation}) {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [page, setPage] = useState(1);
+  const [isAtEndOfScrolling, setIsAtEndOfScrolling] = useState(false);
 
   useEffect(() => {
     getAllTweets()
-  }, [])
+  }, [page])
 
   let getAllTweets = () => {
-    axios.get('https://5e1c-222-128-100-27.ngrok.io/api/tweets')
+    axios.get(`https://5e1c-222-128-100-27.ngrok.io/api/tweets?page=${page}`)
       .then(res => {
-        setData(res.data)
+        if (page === 1) {
+          setData(res.data.data)
+        } else {
+          setData([...data, ...res.data.data])
+        }
+
+        if (res.data.next_page_url) {
+          setIsAtEndOfScrolling(true)
+        }
+
         setIsLoading(false)
         setIsRefreshing(false)
       })
@@ -32,8 +43,14 @@ export default function HomeScreen({navigation}) {
   }
 
   let handleRefresh = () => {
+    setPage(1)
+    setIsAtEndOfScrolling(false)
     setIsRefreshing(true)
-    getAllTweets();
+    getAllTweets()
+  }
+
+  let handleEnd = () => {
+    setPage(page + 1)
   }
 
   const renderItem = ({item: tweet}) => (
@@ -94,6 +111,9 @@ export default function HomeScreen({navigation}) {
           ItemSeparatorComponent={() => <View style={styles.tweetSeparator}></View>}
           refreshing={isRefreshing}
           onRefresh={handleRefresh}
+          onEndReached={handleEnd}
+          onEndReachedThreshold={0}
+          ListFooterComponent={() => !isAtEndOfScrolling && (<ActivityIndicator size={"large"} color={"gray"}/>)}
         />)
       }
       <TouchableOpacity style={styles.floatingButton} onPress={() => goToNewTweet()}>
