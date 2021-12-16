@@ -30,6 +30,8 @@ export default function HomeScreen({navigation}) {
 
         if (res.data.next_page_url) {
           setIsAtEndOfScrolling(true)
+        } else {
+          setIsAtEndOfScrolling(false)
         }
 
         setIsLoading(false)
