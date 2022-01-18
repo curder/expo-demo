@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, FlatList, Image, TouchableOpacity, Platform, ActivityIndicator } from "react-native";
 import { AntDesign, EvilIcons } from "@expo/vector-icons";
-import axios from "axios";
-import dayjs from 'dayjs';
-import '../helpers/formatCustomLocale.js';
-import relativeTime from 'dayjs/plugin/relativeTime';
-
-dayjs.extend(relativeTime)
+import axiosConfig from "../helpers/axiosConfig";
+import locale from 'date-fns/locale/en-US';
+import { formatDistanceToNowStrict } from 'date-fns';
+import formatDistance from "../helpers/formatDistanceCustom";
 
 export default function HomeScreen({navigation}) {
   const [data, setData] = useState([]);
@@ -20,7 +18,7 @@ export default function HomeScreen({navigation}) {
   }, [page])
 
   let getAllTweets = () => {
-    axios.get(`https://5e1c-222-128-100-27.ngrok.io/api/tweets?page=${page}`)
+    axiosConfig.get(`/tweets?page=${page}`)
       .then(res => {
         if (page === 1) {
           setData(res.data.data)
@@ -55,123 +53,101 @@ export default function HomeScreen({navigation}) {
     setPage(page + 1)
   }
 
-  const renderItem = ({item: tweet}) => (
-    <View style={styles.tweetContainer}>
-      <TouchableOpacity onPress={() => goToProfile()}>
-        <Image style={styles.avatar} source={{uri: tweet.user.avatar}}/>
+  const renderItem = ({item: tweet}) => (<View style={styles.tweetContainer}>
+    <TouchableOpacity onPress={() => goToProfile()}>
+      <Image style={styles.avatar} source={{uri: tweet.user.avatar}}/>
+    </TouchableOpacity>
+    <View style={{flex: 1,}}>
+      <TouchableOpacity style={styles.flexRow} onPress={() => goToSignalTweet(tweet.id)}>
+        <Text numberOfLines={1} style={styles.tweetName}>{tweet.user.name}</Text>
+        <Text numberOfLines={1} style={styles.tweetHandle}>@{tweet.user.username}</Text>
+        <Text>&middot;</Text>
+        <Text numberOfLines={1}
+              style={styles.tweetHandle}>
+          {formatDistanceToNowStrict(new Date(tweet.created_at), {
+            locale: {
+              ...locale,
+              formatDistance,
+            },
+          })}
+        </Text>
       </TouchableOpacity>
-      <View style={{flex: 1,}}>
-        <TouchableOpacity style={styles.flexRow} onPress={() => goToSignalTweet()}>
-          <Text numberOfLines={1} style={styles.tweetName}>{tweet.user.name}</Text>
-          <Text numberOfLines={1} style={styles.tweetHandle}>@{tweet.user.username}</Text>
-          <Text>&middot;</Text>
-          <Text numberOfLines={1}
-                style={styles.tweetHandle}>{dayjs(tweet.created_at).locale('custom-locale').toNow()}</Text>
+
+      <TouchableOpacity style={styles.tweetContent} onPress={() => goToSignalTweet(tweet.id)}>
+        <Text style={styles.tweetContentContainer}>{tweet.body}</Text>
+      </TouchableOpacity>
+
+      <View style={styles.tweetEngagement}>
+        <TouchableOpacity style={styles.flexRow}>
+          <EvilIcons name={'comment'} size={22} style={{marginRight: 2}} color={"gray"}/>
+          <Text style={styles.textGray}>5,456</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.tweetContent} onPress={() => goToSignalTweet()}>
-          <Text style={styles.tweetContentContainer}>{tweet.body}</Text>
+        <TouchableOpacity style={[styles.flexRow, styles.ml16]}>
+          <EvilIcons name={'retweet'} size={22} style={{marginRight: 2}} color={"gray"}/>
+          <Text style={styles.textGray}>456</Text>
         </TouchableOpacity>
 
-        <View style={styles.tweetEngagement}>
-          <TouchableOpacity style={styles.flexRow}>
-            <EvilIcons name={'comment'} size={22} style={{marginRight: 2}} color={"gray"}/>
-            <Text style={styles.textGray}>5,456</Text>
-          </TouchableOpacity>
+        <TouchableOpacity style={[styles.flexRow, styles.ml16]}>
+          <EvilIcons name={'heart'} size={22} style={{marginRight: 2}} color={"gray"}/>
+          <Text style={styles.textGray}>1,456</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.flexRow, styles.ml16]}>
-            <EvilIcons name={'retweet'} size={22} style={{marginRight: 2}} color={"gray"}/>
-            <Text style={styles.textGray}>456</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.flexRow, styles.ml16]}>
-            <EvilIcons name={'heart'} size={22} style={{marginRight: 2}} color={"gray"}/>
-            <Text style={styles.textGray}>1,456</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.flexRow, styles.ml16]}>
-            <EvilIcons name={Platform.OS === 'ios' ? 'share-apple' : 'share-google'} size={22}
-                       style={{marginRight: 2}} color={"gray"}/>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={[styles.flexRow, styles.ml16]}>
+          <EvilIcons name={Platform.OS === 'ios' ? 'share-apple' : 'share-google'} size={22}
+                     style={{marginRight: 2}} color={"gray"}/>
+        </TouchableOpacity>
       </View>
     </View>
-  )
+  </View>)
 
   const goToProfile = () => navigation.navigate("Profile Screen")
-  const goToSignalTweet = () => navigation.navigate("Tweet Screen")
+  const goToSignalTweet = (tweetId) => navigation.navigate("Tweet Screen", {tweetId})
   const goToNewTweet = () => navigation.navigate("New Tweet")
 
-  return (
-    <View style={styles.container}>
-      {isLoading
-        ? (<ActivityIndicator style={{marginTop: 12,}} size="large" color={"gray"}/>)
-        : (<FlatList
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={item => item.id.toString()}
-          ItemSeparatorComponent={() => <View style={styles.tweetSeparator}></View>}
-          refreshing={isRefreshing}
-          onRefresh={handleRefresh}
-          onEndReached={handleEnd}
-          onEndReachedThreshold={0}
-          ListFooterComponent={() => !isAtEndOfScrolling && (<ActivityIndicator size={"large"} color={"gray"}/>)}
-        />)
-      }
-      <TouchableOpacity style={styles.floatingButton} onPress={() => goToNewTweet()}>
-        <AntDesign name={'plus'} size={24} color={"white"}/>
-      </TouchableOpacity>
-    </View>
-  )
+  return (<View style={styles.container}>
+    {isLoading ? (<ActivityIndicator style={{marginTop: 12,}} size="large" color={"gray"}/>) : (<FlatList
+      data={data}
+      renderItem={renderItem}
+      keyExtractor={item => item.id.toString()}
+      ItemSeparatorComponent={() => <View style={styles.tweetSeparator}></View>}
+      refreshing={isRefreshing}
+      onRefresh={handleRefresh}
+      onEndReached={handleEnd}
+      onEndReachedThreshold={0}
+      ListFooterComponent={() => !isAtEndOfScrolling && (<ActivityIndicator size={"large"} color={"gray"}/>)}
+    />)}
+    <TouchableOpacity style={styles.floatingButton} onPress={() => goToNewTweet()}>
+      <AntDesign name={'plus'} size={24} color={"white"}/>
+    </TouchableOpacity>
+  </View>)
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  flexRow: {
+    flex: 1, backgroundColor: "white",
+  }, flexRow: {
     flexDirection: "row"
-  },
-  textGray: {
+  }, textGray: {
     color: 'gray',
-  },
-  ml16: {
+  }, ml16: {
     marginLeft: 16
-  },
-  tweetContainer: {
-    flexDirection: "row",
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-  },
-  tweetSeparator: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
-  },
-  avatar: {
-    width: 42,
-    height: 42,
-    marginRight: 8,
-    borderRadius: 21,
-  },
-  tweetName: {
-    fontWeight: "bold",
-    color: "#222"
-  },
-  tweetHandle: {
-    paddingHorizontal: 8,
-    color: "gray"
-  },
-  tweetContentContainer: {
+  }, tweetContainer: {
+    flexDirection: "row", paddingHorizontal: 12, paddingVertical: 12,
+  }, tweetSeparator: {
+    borderBottomWidth: 1, borderBottomColor: "#e5e7eb",
+  }, avatar: {
+    width: 42, height: 42, marginRight: 8, borderRadius: 21,
+  }, tweetName: {
+    fontWeight: "bold", color: "#222"
+  }, tweetHandle: {
+    paddingHorizontal: 8, color: "gray"
+  }, tweetContentContainer: {
     marginTop: 8,
-  },
-  tweetContent: {
+  }, tweetContent: {
     lineHeight: 20,
-  },
-  tweetEngagement: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 12,
+  }, tweetEngagement: {
+    flexDirection: "row", alignItems: "center", marginTop: 12,
   },
 
   floatingButton: {
