@@ -14,3 +14,7 @@ expo install react-native-gesture-handler
 ```bash
 yarn start
 ```
+
+## Dependencies
+
+[curder/expo-api-demo](https://github.com/curder/expo-api-demo)
